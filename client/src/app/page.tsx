@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useEffect } from "react";
+import React, { use, useContext, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Searchbox from "../app/components/searchbox";
 import Sheettest from "../app/components/sheettest";
@@ -9,6 +9,8 @@ import ChatEntry from "../app/components/chatlist";
 import Message from "../app/components/message";
 import AuthContext from "./context/AuthContext";
 import { IAuthContext } from "@/types/types";
+import axios from "axios";
+import { Span } from "next/dist/trace";
 
 
 interface User {
@@ -16,90 +18,104 @@ interface User {
   profileImage: string;
 }
 
-interface ChatData {
-  user: User;
-  message: string;
-  date: string;
-  unreadCount: number;
-  online: boolean;
-}
+// interface ChatData {
+//   user: User;
+//   message: string;
+//   date: string;
+//   unreadCount: number;
+//   online: boolean;
+// }
 
 const page = () => {
   const {user, isFetching, error, dispatch , logout} = useContext<IAuthContext>(AuthContext);
+  const [conversation, setConversation] = useState<any[]>([]);
+  const [currentChat, setCurrentChat] = useState<any>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [newMessage, setNewMessage] = useState<any>("");
+  const scrollref = useRef<any>();
 
   
 
-  const chatData: ChatData[] = [
-    {
-      user: {
-        name: "Mercedes Yemelyan",
-        profileImage:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s",
-      },
-      message: "Yea, Sure!",
-      date: "15 April",
-      unreadCount: 3,
-      online: true,
-    },
+  useEffect(() => {
+    const fetchConversation = async () => {
+      try {
+        const res = await axios.get("http://localhost:8800/api/conversations/"+user._id);
+        setConversation(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
 
-    {
-      user: {
-        name: "Mercedes Yemelyan",
-        profileImage:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s",
-      },
-      message: "Yea, Sure!",
-      date: "15 April",
-      unreadCount: 3,
-      online: true,
-    },
-    {
-      user: {
-        name: "Mercedes Yemelyan",
-        profileImage:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s",
-      },
-      message: "Yea, Sure!",
-      date: "15 April",
-      unreadCount: 3,
-      online: true,
-    },
-    {
-      user: {
-        name: "Mercedes Yemelyan",
-        profileImage:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s",
-      },
-      message: "Yea, Sure!",
-      date: "15 April",
-      unreadCount: 3,
-      online: true,
-    },
-    {
-      user: {
-        name: "Mercedes Yemelyan",
-        profileImage:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s",
-      },
-      message: "Yea, Sure!",
-      date: "15 April",
-      unreadCount: 3,
-      online: true,
-    },
-    {
-      user: {
-        name: "Mercedes Yemelyan",
-        profileImage:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnSA1zygA3rubv-VK0DrVcQ02Po79kJhXo_A&s",
-      },
-      message: "Yea, Sure!",
-      date: "15 April",
-      unreadCount: 3,
-      online: true,
-    },
-  ];
+    fetchConversation();
+  }
+  ,[user?._id]);
 
+  
 
+  
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await axios.get("http://localhost:8800/api/messages/" + (currentChat as any)?._id);
+        setMessages(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+  
+    // Call fetchMessages function here to ensure it runs on currentChat change
+    if (currentChat) {
+      fetchMessages();
+    }
+  }, [currentChat]);
+
+  const handleSubmit = async (e:any) => {
+    e.preventDefault();
+    const message = {
+      sender: user._id,
+      text: newMessage,
+      conversationId: (currentChat as any)._id,
+    };
+
+    const receiverId = (currentChat as any).members.find(
+      (member: any) => member !== user._id
+    );
+
+    const sendMessage = async () => {
+      try {
+        const res=await axios.post("http://localhost:8800/api/messages/", message);
+        setMessages([...messages, res.data]);
+        setNewMessage("");
+      } catch (err) {
+        console.log(err);
+      }
+    };
+   
+
+    sendMessage();
+  }
+
+  console.log(currentChat)
+  const [chatName,setchatName]=useState<any>(null);
+  useEffect(() => {
+    const fetchChatName = async () => {
+      try {
+        const res = await axios.get("http://localhost:8800/api/users/"+(currentChat as any).members.find((member:any) => member !== user._id));
+        setchatName(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    if(currentChat){
+      fetchChatName();
+    }
+  }
+  ,[currentChat]);
+
+  useEffect(() => { 
+    scrollref.current?.scrollIntoView({ behavior: "smooth" });
+  }
+  ,[messages]);
   
 
 
@@ -125,30 +141,28 @@ const page = () => {
             </div>
           </div>
         </div>
-        <div className="h-[80svh] mt-4 overflow-y-auto">
-          {chatData.map((chat, index) => (
+        <div className="h-auto mt-4 overflow-y-auto">
+          {conversation.map((chat) => (
+            <div onClick={()=>setCurrentChat(chat)}>
             <ChatEntry
-              key={index}
-              user={chat.user}
-              message={chat.message}
-              date={chat.date}
-              unreadCount={chat.unreadCount}
-              online={chat.online}
+              chat={chat}
+              currentUser={user}
             />
+            </div>
           ))}
         </div>
       </div>
-
+      {currentChat ? <>
       <div className="chatbox flex flex-col  h-[91svh] border w-2/4 p-4">
-        <div className="chatboxheader flex items-center justify-between p-2 bg-white rounded-lg shadow-md">
+      <div className="chatboxheader flex items-center justify-between p-2 bg-white rounded-lg shadow-md">
           <div className="flex items-center gap-2">
             <img
               className="w-10 h-10 rounded-full"
-              src="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
+              src={chatName?.profilePicture ? chatName?.profilePicture : "https://cdn-icons-png.freepik.com/512/219/219986.png"}
               alt=""
             />
             <div>
-              <h1 className="text-lg font-bold text-gray-900">John Doe</h1>
+              <h1 className="text-lg font-bold text-gray-900">{chatName?.username}</h1>
               <p className="text-sm text-gray-500 pl-1">Expert</p>
             </div>
           </div>
@@ -156,60 +170,16 @@ const page = () => {
             <Button variant="outline">Profile</Button>
           </div>
         </div>
+       
         <div className="messages flex-grow mt-4 overflow-y-auto">
+        {messages.map((message) => (
+          <div ref={scrollref}>
           <Message
-            sender
-            name="John Doe"
-            time="11:30"
-            message="Hey there! How's it going?"
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
+            sender={(message as any)?.sender === user?._id}
+            message={message}
           />
-          <Message
-            name="Bonnie Green"
-            time="11:46"
-            message="That's awesome. I think our users will really appreciate the improvements."
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
-          />
-          <Message
-            sender
-            name="John Doe"
-            time="11:30"
-            message="Hey there! How's it going?"
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
-          />
-          <Message
-            name="Bonnie Green"
-            time="11:46"
-            message="That's awesome. I think our users will really appreciate the improvements."
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
-          />
-
-          <Message
-            name="Bonnie Green"
-            time="11:46"
-            message="That's awesome. I think our users will really appreciate the improvements."
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
-          />
-          <Message
-            sender
-            name="John Doe"
-            time="11:30"
-            message="Hey there! How's it going?"
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
-          />
-          <Message
-            name="Bonnie Green"
-            time="11:46"
-            message="That's awesome. I think our users will really appreciate the improvements."
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
-          />
-
-          <Message
-            name="Bonnie Green"
-            time="11:46"
-            message="That's awesome. I think our users will really appreciate the improvements."
-            avatarSrc="https://cdn.pixabay.com/photo/2016/04/15/18/05/computer-1331579_640.png"
-          />
+          </div>
+        ))}
         </div>
         <div className="textareabottom fixed bottom-0 w-2/4 bg-white ">
           <div className="flex flex-row items-center h-16 rounded-xl bg-white ">
@@ -236,6 +206,8 @@ const page = () => {
                 <input
                   type="text"
                   className="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10"
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  value={newMessage}
                 />
                 <button className="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600">
                   <svg
@@ -256,7 +228,7 @@ const page = () => {
               </div>
             </div>
             <div className="ml-4">
-              <button className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
+              <button onClick={handleSubmit} className="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
                 <span>Send</span>
                 <span className="ml-2">
                   <svg
@@ -279,6 +251,8 @@ const page = () => {
           </div>
         </div>
       </div>
+      </>
+        : <span className="flex-grow border w-2/4">No chat selected</span>}
 
       <div className="chatonline flex-grow flex-grow-3.5 border w-1/4">
         <div className="chatonlinewrapper">{user &&(
