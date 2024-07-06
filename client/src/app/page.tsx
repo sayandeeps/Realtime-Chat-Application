@@ -10,8 +10,7 @@ import Message from "../app/components/message";
 import AuthContext from "./context/AuthContext";
 import { IAuthContext } from "@/types/types";
 import axios from "axios";
-import { Span } from "next/dist/trace";
-
+import {io} from "socket.io-client";
 
 interface User {
   name: string;
@@ -34,7 +33,19 @@ const page = () => {
   const [newMessage, setNewMessage] = useState<any>("");
   const scrollref = useRef<any>();
 
-  
+  const socket = useRef<any>();
+
+  useEffect(() => {
+    socket.current = io("ws://localhost:8900");
+  },[]);
+
+  useEffect(() => {
+    socket?.current?.emit("addUser",user?._id);
+    socket?.current?.on("getUsers",(users: any)=>{
+      console.log(users);
+    });
+  }
+  ,[user]);
 
   useEffect(() => {
     const fetchConversation = async () => {
