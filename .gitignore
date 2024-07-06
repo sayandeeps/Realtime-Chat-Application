@@ -19,7 +19,8 @@ desktop.ini
 # Logs
 logs
 *.log
-
+#Socket
+socket/node_modules/
 # OS files
 *.tmp
 *~
