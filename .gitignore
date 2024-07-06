@@ -1,0 +1,25 @@
+# Node.js dependencies
+node_modules/
+
+# API folder
+api/.env
+api/node_modules/
+
+# Client folder
+client/.next/
+client/node_modules/
+client/.vercel
+client/.env
+
+# General files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs
+*.log
+
+# OS files
+*.tmp
+*~
