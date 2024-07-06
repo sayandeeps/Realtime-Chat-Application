@@ -15,9 +15,9 @@ export const LoginFailure = (error :any) => {
         payload: error,
     };
 };
-// export Logout = () => {
-//     return {
-//         type: "LOGOUT",
-//     };
-// };
+export const Logout = () => {
+    return {
+      type: "LOGOUT",
+    };
+  };
  

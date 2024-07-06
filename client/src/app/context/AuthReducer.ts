@@ -1,32 +1,34 @@
-const AuthReducer = (state: any, action: any): any => {
+
+const AuthReducer = (state:any , action: any) => {
+    console.log("AuthReducer received action:", action);
     switch (action.type) {
-        case "LOGIN_START":
+      case "LOGIN_START":
+        return {
+          user: null,
+          isFetching: true,
+          error: false,
+        };
+      case "LOGIN_SUCCESS":
+        console.log("Updating user state:", action.payload);
+        return {
+          user: action.payload,
+          isFetching: false,
+          error: false,
+        };
+      case "LOGIN_FAILURE":
+        return {
+          user: null,
+          isFetching: false,
+          error: true,
+        };
+       case "LOGOUT":
         return {
             user: null,
-            isfetching: true,
+            isFetching: false,
             error: false,
         };
-        case "LOGIN_SUCCESS":
-        return {
-            user: action.payload,
-            isfetching: false,
-            error: false,
-        };
-        case "LOGIN_FAILURE":
-        return {
-            user: null,
-            isfetching: false,
-            error: action.payload,
-        };
-        case "LOGOUT":
-        return {
-            user: null,
-            isfetching: false,
-            error: false,
-        };
-        default:
+      default:
         return state;
     }
-
-}
-export default AuthReducer;
+  };
+  export default AuthReducer;

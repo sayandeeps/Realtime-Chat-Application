@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Searchbox from "../app/components/searchbox";
 import Sheettest from "../app/components/sheettest";
@@ -7,6 +7,9 @@ import Chatcircle from "../app/components/chatonline";
 import Modalt from "../app/components/Modalt";
 import ChatEntry from "../app/components/chatlist";
 import Message from "../app/components/message";
+import AuthContext from "./context/AuthContext";
+import { IAuthContext } from "@/types/types";
+
 
 interface User {
   name: string;
@@ -22,6 +25,10 @@ interface ChatData {
 }
 
 const page = () => {
+  const {user, isFetching, error, dispatch , logout} = useContext<IAuthContext>(AuthContext);
+
+  
+
   const chatData: ChatData[] = [
     {
       user: {
@@ -91,6 +98,10 @@ const page = () => {
       online: true,
     },
   ];
+
+
+  
+
 
   return (
     <div className="messenger h-dvh flex overflow-hidden ">
@@ -270,7 +281,12 @@ const page = () => {
       </div>
 
       <div className="chatonline flex-grow flex-grow-3.5 border w-1/4">
-        <div className="chatonlinewrapper">online</div>
+        <div className="chatonlinewrapper">{user &&(
+        <a href="#" onClick={logout}>
+            Logout
+          </a>
+          )}
+          </div>
       </div>
     </div>
   );

@@ -1,11 +1,10 @@
-import { createContext, useReducer } from "react";
+'use client'
+import { createContext, useEffect, useReducer } from "react";
+import Cookies from 'js-cookie';
 import AuthReducer from "./AuthReducer";
+import { LoginSuccess, Logout } from "./AuthActions";
+import { IInitialState, IAuthContext } from "../../types/types";
 
-interface IInitialState {
-  user: null | any;
-  isFetching: boolean;
-  error: boolean;
-}
 
 const INITIAL_STATE: IInitialState = {
   user: null,
@@ -13,22 +12,41 @@ const INITIAL_STATE: IInitialState = {
   error: false,
 };
 
-interface IAuthContext {
-  user: null | any;
-  isFetching: boolean;
-  error: boolean;
-  dispatch: React.Dispatch<any>;
-}
 
 export const AuthContext = createContext<IAuthContext>({
-  user: null,
-  isFetching: false,
-  error: false,
-  dispatch: () => null,
+  ...INITIAL_STATE,
+  dispatch: () => {},
+  logout: () => {},
 });
 
-export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthContextProvider = ({ children }: any) => {
   const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
+ 
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    if (userCookie) {
+      try {
+        const user = JSON.parse(userCookie);
+        dispatch(LoginSuccess(user));
+      } catch (error) {
+        console.error('Failed to parse user cookie:', error);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (state.user) {
+      Cookies.set('user', JSON.stringify(state.user), {
+        expires: 30, // 30 days
+      });
+    } else {
+      Cookies.remove('user');
+    }
+  }, [state.user]);
+
+  const logout = () => {
+    dispatch(Logout());
+  };
 
   return (
     <AuthContext.Provider
@@ -37,6 +55,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
         isFetching: state.isFetching,
         error: state.error,
         dispatch,
+        logout,
       }}
     >
       {children}
