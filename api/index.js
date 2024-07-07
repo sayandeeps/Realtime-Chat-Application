@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 var cors = require('cors')
 const app = express();
 app.use(cors());
@@ -11,6 +12,8 @@ const authRoute = require('./routes/auth');
 const conversationRoute = require('./routes/conversations');
 const messageRoute = require('./routes/messages');
 dotenv.config();
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))

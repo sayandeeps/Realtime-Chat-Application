@@ -32,7 +32,31 @@ const page = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState<any>("");
   const[arrivalMessage,setArrivalMessage]=useState<any>(null);
+  const[imageChat,setImageChat]=useState<any>(null);
   const scrollref = useRef<any>();
+  const fileRef = useRef<any>();
+
+  const selectFile = () => {
+    fileRef.current.click();
+  }
+  const fileSelected = (e:any) => {
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64 = reader.result;
+      console.log(typeof base64);
+      setMessages([...messages, {
+        sender: user?._id,
+        text: base64,
+        conversationId: (currentChat as any)._id,
+      }]);
+      
+      socket.current.emit("sendMessage",{senderId: user?._id, receiverId, text: base64});
+
+  }
+}
 
   const socket = useRef<any>();
 
@@ -63,7 +87,7 @@ const page = () => {
   useEffect(() => {
     const fetchConversation = async () => {
       try {
-        const res = await axios.get("http://localhost:8800/api/conversations/"+user._id);
+        const res = await axios.get("http://localhost:8800/api/conversations/"+user?._id);
         setConversation(res.data);
       } catch (err) {
         console.log(err);
@@ -93,42 +117,45 @@ const page = () => {
     }
   }, [currentChat]);
 
+  const receiverId = (currentChat as any)?.members?.find(
+    (member: any) => member !== user?._id
+  );
+
+
   const handleSubmit = async (e:any) => {
     e.preventDefault();
     const message = {
-      sender: user._id,
+      sender: user?._id,
       text: newMessage,
       conversationId: (currentChat as any)._id,
     };
 
-    const receiverId = (currentChat as any).members.find(
-      (member: any) => member !== user._id
-    );
+    
 
+    
 
-    const sendMessage = async () => {
-      try {
-        const res=await axios.post("http://localhost:8800/api/messages/", message);
-        setMessages([...messages, res.data]);
-        setNewMessage("");
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    socket.current.emit("sendMessage",{senderId: user._id, receiverId, text: newMessage});
+    socket.current.emit("sendMessage",{senderId: user?._id, receiverId, text: newMessage});
 
    
 
-    sendMessage();
+    sendMessage(message);
   }
+  const sendMessage = async (message:any) => {
+    try {
+      const res=await axios.post("http://localhost:8800/api/messages/", message);
+      setMessages(prevMessages => [...prevMessages, res.data]);
+      setNewMessage("");
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // console.log(currentChat)
   const [chatName,setchatName]=useState<any>(null);
   useEffect(() => {
     const fetchChatName = async () => {
       try {
-        const res = await axios.get("http://localhost:8800/api/users/"+(currentChat as any).members.find((member:any) => member !== user._id));
+        const res = await axios.get("http://localhost:8800/api/users/"+(currentChat as any).members.find((member:any) => member !== user?._id));
         setchatName(res.data);
       } catch (err) {
         console.log(err);
@@ -214,7 +241,8 @@ const page = () => {
         <div className="textareabottom fixed bottom-0 w-2/4 bg-white ">
           <div className="flex flex-row items-center h-16 rounded-xl bg-white ">
             <div>
-              <button className="flex items-center justify-center text-gray-400 hover:text-gray-600">
+              <button onClick={selectFile} className="flex items-center justify-center text-gray-400 hover:text-gray-600">
+              <input onChange={fileSelected} ref={fileRef} type="file" style={{display : "none"}} />
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -240,20 +268,7 @@ const page = () => {
                   value={newMessage}
                 />
                 <button className="absolute flex items-center justify-center h-full w-12 right-0 top-0 text-gray-400 hover:text-gray-600">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
+                  
                 </button>
               </div>
             </div>
