@@ -85,18 +85,24 @@ const page = () => {
   ,[user]);
 
   useEffect(() => {
+    if (!user?._id) {
+      console.log("User ID is not defined");
+      return;
+    }
+  
     const fetchConversation = async () => {
       try {
-        const res = await axios.get("http://localhost:8800/api/conversations/"+user?._id);
+        const res = await axios.get("http://localhost:8800/api/conversations/" + user?._id);
+        console.log("Fetched conversation:", res.data);
         setConversation(res.data);
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching conversation:", err);
       }
     };
-
+  
     fetchConversation();
-  }
-  ,[user?._id]);
+  }, [user?._id]);
+ 
 
   
 
