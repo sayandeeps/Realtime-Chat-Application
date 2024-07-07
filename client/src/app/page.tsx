@@ -31,13 +31,26 @@ const page = () => {
   const [currentChat, setCurrentChat] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState<any>("");
+  const[arrivalMessage,setArrivalMessage]=useState<any>(null);
   const scrollref = useRef<any>();
 
   const socket = useRef<any>();
 
   useEffect(() => {
     socket.current = io("ws://localhost:8900");
+    socket.current.on("getMessage",(data:any)=>{
+      setArrivalMessage({
+        sender:data.senderId,
+        text:data.text,
+        createdAt:Date.now()
+      });
+    }
+    );
   },[]);
+
+  useEffect(() => {
+    arrivalMessage && currentChat?.members.includes(arrivalMessage.sender) && setMessages((prev)=>[...prev,arrivalMessage]);
+  },[arrivalMessage,currentChat]);
 
   useEffect(() => {
     socket?.current?.emit("addUser",user?._id);
@@ -92,6 +105,7 @@ const page = () => {
       (member: any) => member !== user._id
     );
 
+
     const sendMessage = async () => {
       try {
         const res=await axios.post("http://localhost:8800/api/messages/", message);
@@ -101,12 +115,15 @@ const page = () => {
         console.log(err);
       }
     };
+
+    socket.current.emit("sendMessage",{senderId: user._id, receiverId, text: newMessage});
+
    
 
     sendMessage();
   }
 
-  console.log(currentChat)
+  // console.log(currentChat)
   const [chatName,setchatName]=useState<any>(null);
   useEffect(() => {
     const fetchChatName = async () => {
@@ -122,6 +139,8 @@ const page = () => {
     }
   }
   ,[currentChat]);
+
+  
 
   useEffect(() => { 
     scrollref.current?.scrollIntoView({ behavior: "smooth" });
