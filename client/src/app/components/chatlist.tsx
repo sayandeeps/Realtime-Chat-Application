@@ -27,7 +27,7 @@ const ChatEntry: React.FC<any> = ({ chat, currentUser,isOnline }:any) => {
     
   },[currentUser, chat]);
 
-  console.log("idhar",isOnline);
+  // console.log("idhar",isOnline);
 
   return (
     <div

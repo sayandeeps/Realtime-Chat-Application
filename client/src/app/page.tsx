@@ -12,6 +12,8 @@ import { IAuthContext } from "@/types/types";
 import axios from "axios";
 import { io } from "socket.io-client";
 import CircularProgress from '@mui/material/CircularProgress';
+import Searchuser from "../app/components/searchuser";
+import Navbar from '../app/components/navbar';
 
 interface User {
   name: string;
@@ -92,7 +94,7 @@ const page = () => {
   useEffect(() => {
     socket?.current?.emit("addUser", user?._id);
     socket?.current?.on("getUsers", (users: any) => {
-      console.log(users);
+      // console.log(users);
     });
   }, [user]);
 
@@ -110,10 +112,10 @@ const page = () => {
       setAvailableUsers(availableUsersComponents);
     });
   }, []);
-console.log("idhar dekho",availableUsers.map((user: any) => user.props.children.props.members.userId));
+// console.log("idhar dekho",availableUsers.map((user: any) => user.props.children.props.members.userId));
   useEffect(() => {
     if (!user?._id) {
-      console.log("User ID is not defined");
+      // console.log("User ID is not defined");
       return;
     }
 
@@ -122,7 +124,7 @@ console.log("idhar dekho",availableUsers.map((user: any) => user.props.children.
         const res = await axios.get(
           "http://localhost:8800/api/conversations/" + user?._id
         );
-        console.log("Fetched conversation:", res.data);
+        // console.log("Fetched conversation:", res.data);
         setConversation(res.data);
       } catch (err) {
         console.error("Error fetching conversation:", err);
@@ -275,6 +277,8 @@ useEffect(() => {
   };
 }, [hasMore, fetchMoreMessages, loadingMore]);
   return (
+    <>
+    <Navbar/>
     <div className="messenger h-dvh flex overflow-hidden ">
       {/* section 1 */}
       <div className="chatmenu flex-grow border overflow-y-auto flex-grow-1 p-2 w-1/4">
@@ -283,7 +287,7 @@ useEffect(() => {
           {/* online users */}
           <div className="p-4 pb-1 bg-white rounded-lg shadow-md">
             <h1 className="text-lg font-bold text-gray-900 mb-4">
-              Experts Available 
+              Users Available 
             </h1>
             <div className="flex gap-6 overflow-x-auto scrollbar-hide mb-4">
             {availableUsers}
@@ -347,7 +351,7 @@ useEffect(() => {
               ))}
             
             </div>
-            <div className="textareabottom fixed bottom-0 w-2/4 bg-white ">
+            <div className="textareabottom fixed bottom-0 right-0 w-2/4 bg-white ">
               <div className="flex flex-row items-center h-16 rounded-xl bg-white ">
                 <div>
                   <button
@@ -418,17 +422,15 @@ useEffect(() => {
       ) : (
         <span className="flex-grow text-6xl text-gray-400 w-2/4 m-auto ml-auto mr-auto pl-12">No chat selected</span>
       )}
-
+{!user?.isExpert &&(
       <div className="chatonline flex-grow flex-grow-3.5 border w-1/4">
-        <div className="chatonlinewrapper">
-          {user && (
-            <a href="#" onClick={logout}>
-              Logout
-            </a>
-          )}
-        </div>
+<Searchuser/>
       </div>
+)
+}
     </div>
+    </>
+
   );
 };
 

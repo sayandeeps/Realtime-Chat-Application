@@ -11,6 +11,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { IInitialState, IAuthContext } from "../../types/types";
+import { AuthContext } from '../context/AuthContext'
+
 import {
   Drawer,
   DrawerClose,
@@ -23,10 +26,14 @@ import {
 } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useContext } from "react";
 
 const modalt: React.FC<any> = ({ member }:any) => {
+  const {user} = useContext<IAuthContext>(AuthContext);
+
   const [open, setOpen] = React.useState(false)
-  console.log(member)
+  console.log("member form",member._id)
+  console.log("current",user.connecedExpert)
   return (
     <Dialog open={open} onOpenChange={setOpen} >
             <DialogTrigger asChild>
@@ -72,8 +79,18 @@ const modalt: React.FC<any> = ({ member }:any) => {
         </li>
     </ul>
     <div className="p-4 border-t mx-8 mt-2">
-        <button className="w-1/2 block mx-auto rounded-full bg-gray-900 hover:shadow-lg font-semibold text-white px-6 py-2">Connected</button>
-    </div>
+    <button
+  className={`w-1/2 block mx-auto rounded-full ${
+    user?.connecedExpert?.includes(member._id) ? "bg-green-500" : "bg-blue-500"
+  } hover:shadow-lg font-semibold text-white px-6 py-2`}
+  onClick={() => {
+    if (user?.connectedExperts?.includes(member._id)) {
+    } else {
+    }
+  }}
+>
+  {user?.connecedExpert?.includes(member._id) ? "Connected" : "Connect"}
+</button>    </div>
 </div>
             </DialogContent>
           </Dialog>

@@ -12,8 +12,7 @@ const page = () => {
     const {user, isFetching, error, dispatch , logout} = useContext<IAuthContext>(AuthContext);
     const handleClick = (e:any) => {
         e.preventDefault();
-        console.log(email.current?.value)
-        console.log(password.current?.value)
+   
         if (email.current && password.current) {
             loginCall({ email: email.current.value, password: password.current.value }, dispatch);
             // Reset email and password fields

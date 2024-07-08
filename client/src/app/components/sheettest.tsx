@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import {
   Sheet,
   SheetClose,
@@ -18,7 +19,7 @@ export default function SheetDemo() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open</Button>
+        <Button variant="outline"><span><NotificationImportantIcon/></span></Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>

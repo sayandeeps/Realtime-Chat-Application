@@ -11,6 +11,8 @@ const userRoute = require('./routes/users');
 const authRoute = require('./routes/auth');
 const conversationRoute = require('./routes/conversations');
 const messageRoute = require('./routes/messages');
+const NotificationRoute = require('./routes/notifications');
+
 dotenv.config();
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
@@ -29,6 +31,7 @@ app.use('/api/users', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/conversations', conversationRoute);
 app.use('/api/messages', messageRoute);
+app.use('/api/notifications', NotificationRoute);
 
 
 
