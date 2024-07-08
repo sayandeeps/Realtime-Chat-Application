@@ -6,7 +6,7 @@ import React, { useState , useEffect} from 'react';
 
 
 
-const ChatEntry: React.FC<any> = ({ chat, currentUser }:any) => {
+const ChatEntry: React.FC<any> = ({ chat, currentUser,isOnline }:any) => {
 
   const [user, setUser] = useState<any>(null);
 
@@ -27,7 +27,7 @@ const ChatEntry: React.FC<any> = ({ chat, currentUser }:any) => {
     
   },[currentUser, chat]);
 
-  // console.log(user);
+  console.log("idhar",isOnline);
 
   return (
     <div
@@ -44,9 +44,10 @@ const ChatEntry: React.FC<any> = ({ chat, currentUser }:any) => {
             alt="chat-user"
           />
           <span
-            className={`absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white ${
-              1<0 ? 'bg-green-500' : 'bg-gray-400'
-            }`}
+            className={`absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white 
+              ${isOnline.some((id:any) => id === user?._id) ? 'bg-green-500' : 'bg-gray-400'}
+
+             `}
           ></span>
         </div>
       </div>
@@ -55,7 +56,7 @@ const ChatEntry: React.FC<any> = ({ chat, currentUser }:any) => {
           <span className="text-gray-800">{user?.username}</span>
         </div>
         <div>
-          <small className="text-gray-600">recent chat</small>
+          <small className="text-gray-600">Click to chat with expert</small>
         </div>
       </div>
       <div className="flex-2 text-right">

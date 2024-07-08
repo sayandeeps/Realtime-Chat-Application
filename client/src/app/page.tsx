@@ -110,7 +110,7 @@ const page = () => {
       setAvailableUsers(availableUsersComponents);
     });
   }, []);
-
+console.log("idhar dekho",availableUsers.map((user: any) => user.props.children.props.members.userId));
   useEffect(() => {
     if (!user?._id) {
       console.log("User ID is not defined");
@@ -189,7 +189,7 @@ const page = () => {
       );
       console.log("Fetched more messages:", res.data.results);
       setMessages([...messages, ...res.data.results]);
-      if ( res.data.next) {
+      if (res.data.next) {
         setHasMore(true);
       } else {
         setHasMore(false);
@@ -285,7 +285,7 @@ useEffect(() => {
             <h1 className="text-lg font-bold text-gray-900 mb-4">
               Experts Available 
             </h1>
-            <div className="flex gap-6 overflow-x-hidden scrollbar-hide mb-4">
+            <div className="flex gap-6 overflow-x-auto scrollbar-hide mb-4">
             {availableUsers}
             </div>
           </div>
@@ -293,7 +293,7 @@ useEffect(() => {
         <div className="h-auto mt-4 overflow-y-auto">
           {conversation.map((chat) => (
             <div onClick={() => setCurrentChat(chat)}>
-              <ChatEntry chat={chat} currentUser={user} />
+              <ChatEntry chat={chat} currentUser={user} isOnline={availableUsers.map((user: any) => user.props.children.props.members.userId)} />
             </div>
           ))}
         </div>
@@ -416,7 +416,7 @@ useEffect(() => {
           </div>
         </>
       ) : (
-        <span className="flex-grow border w-2/4">No chat selected</span>
+        <span className="flex-grow text-6xl text-gray-400 w-2/4 m-auto ml-auto mr-auto pl-12">No chat selected</span>
       )}
 
       <div className="chatonline flex-grow flex-grow-3.5 border w-1/4">
