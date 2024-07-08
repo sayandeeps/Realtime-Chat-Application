@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useContext, useEffect, useRef, useState } from "react";
+import React, { use, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Searchbox from "../app/components/searchbox";
 import Sheettest from "../app/components/sheettest";
@@ -50,7 +50,7 @@ const page = () => {
     reader.readAsDataURL(file);
     reader.onload = () => {
       const base64 = reader.result;
-      console.log(typeof base64);
+      // console.log(typeof base64);
       // setMessages([...messages, {
       //   sender: user?._id,
       //   text: base64,
@@ -96,6 +96,21 @@ const page = () => {
     });
   }, [user]);
 
+  const [availableUsers, setAvailableUsers] = useState([]);
+
+  useEffect(() => {
+    socket.current.emit("addUser", user?._id);
+    socket.current.on("getUsers", (ausers: any) => {
+      const filteredUsers = ausers.filter((user: any) => user.userId !== null);
+      const availableUsersComponents = filteredUsers.map((user: any, i: any) => (
+        <div key={i} className="flex-shrink-0">
+          <Chatcircle members={user} />
+        </div>
+      ));
+      setAvailableUsers(availableUsersComponents);
+    });
+  }, []);
+
   useEffect(() => {
     if (!user?._id) {
       console.log("User ID is not defined");
@@ -119,7 +134,6 @@ const page = () => {
 
   const [hasMore, setHasMore] = useState(true);
 
-  
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -132,10 +146,10 @@ const page = () => {
             },
           }
         );
-        console.log("Fetched messages:", currentChat , res.data.results);
+        // console.log("Fetched messages:", currentChat , res.data.results);
 
         setMessages(res.data.results);
-        if (res.data.previous || res.data.next) {
+        if (res.data.next) {
           setHasMore(true);
         } else {
           setHasMore(false);
@@ -145,15 +159,17 @@ const page = () => {
       }
     };
 
+    setPage(1);
+    setMessages([]);
+
     if (currentChat) {
-setPage(1);
       fetchMessages();
     }
   }, [currentChat]);
 
   // console.log(currentChat ,page)
 
-  const fetchMoreMessages = async () => {
+  const fetchMoreMessages = useCallback( async () => {
     if (!hasMore) {
       console.log("No more messages to fetch");
       return;
@@ -173,7 +189,7 @@ setPage(1);
       );
       console.log("Fetched more messages:", res.data.results);
       setMessages([...messages, ...res.data.results]);
-      if (res.data.previous || res.data.next) {
+      if ( res.data.next) {
         setHasMore(true);
       } else {
         setHasMore(false);
@@ -181,7 +197,7 @@ setPage(1);
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [currentChat, page, messages, hasMore]);
 
   const receiverId = (currentChat as any)?.members?.find(
     (member: any) => member !== user?._id
@@ -249,6 +265,8 @@ useEffect(() => {
       fetchMoreMessages().finally(() => {
         setLoadingMore(false);
       });
+    }else if(!hasMore){
+      setLoadingMore(false);
     }
   };
   topref.current?.addEventListener('scroll', handleScroll);
@@ -261,20 +279,14 @@ useEffect(() => {
       {/* section 1 */}
       <div className="chatmenu flex-grow border overflow-y-auto flex-grow-1 p-2 w-1/4">
         <div className="sticky top-0 bg-white z-10">
-          <Searchbox />
+          {/* <Searchbox /> */}
           {/* online users */}
           <div className="p-4 pb-1 bg-white rounded-lg shadow-md">
             <h1 className="text-lg font-bold text-gray-900 mb-4">
-              Experts Available <Modalt />
+              Experts Available 
             </h1>
             <div className="flex gap-6 overflow-x-hidden scrollbar-hide mb-4">
-              {Array(13)
-                .fill(0)
-                .map((_, i) => (
-                  <div key={i} className="flex-shrink-0">
-                    <Chatcircle />
-                  </div>
-                ))}
+            {availableUsers}
             </div>
           </div>
         </div>
@@ -308,11 +320,11 @@ useEffect(() => {
                 </div>
               </div>
               <div>
-                <Button variant="outline">Profile</Button>
+              <Modalt member={chatName} />
               </div>
             </div>
 
-            <div ref={topref} className="messages flex-grow mt-4 overflow-y-auto">
+            <div ref={topref} key={currentChat?._id} className="messages flex-grow mt-4 overflow-y-auto">
               {/* <Button
                 onClick={fetchMoreMessages}
                 variant="outline"
