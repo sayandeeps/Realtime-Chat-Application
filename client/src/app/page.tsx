@@ -47,11 +47,12 @@ const page = () => {
     reader.onload = () => {
       const base64 = reader.result;
       console.log(typeof base64);
-      setMessages([...messages, {
-        sender: user?._id,
-        text: base64,
-        conversationId: (currentChat as any)._id,
-      }]);
+      // setMessages([...messages, {
+      //   sender: user?._id,
+      //   text: base64,
+      //   conversationId: (currentChat as any)._id,
+      // }]);
+      sendMessage({sender: user?._id, text: base64, conversationId: (currentChat as any)._id});
       
       socket.current.emit("sendMessage",{senderId: user?._id, receiverId, text: base64});
 
@@ -110,8 +111,14 @@ const page = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const res = await axios.get("http://localhost:8800/api/messages/" + (currentChat as any)?._id);
-        setMessages(res.data);
+        const res = await axios.get("http://localhost:8800/api/messages/" + (currentChat as any)?._id, {
+          params: {
+            page: 1,
+            limit: 10,
+          },
+        });
+        console.log("Fetched messages:", res.data.results);
+        setMessages(res.data.results.reverse() as any);
       } catch (err) {
         console.log(err);
       }
@@ -127,7 +134,6 @@ const page = () => {
     (member: any) => member !== user?._id
   );
 
-
   const handleSubmit = async (e:any) => {
     e.preventDefault();
     const message = {
@@ -135,22 +141,14 @@ const page = () => {
       text: newMessage,
       conversationId: (currentChat as any)._id,
     };
-
-    
-
-    
-
     socket.current.emit("sendMessage",{senderId: user?._id, receiverId, text: newMessage});
-
-   
-
     sendMessage(message);
+    setNewMessage("");
   }
   const sendMessage = async (message:any) => {
     try {
       const res=await axios.post("http://localhost:8800/api/messages/", message);
       setMessages(prevMessages => [...prevMessages, res.data]);
-      setNewMessage("");
     } catch (err) {
       console.log(err);
     }
@@ -235,7 +233,7 @@ const page = () => {
         </div>
        
         <div className="messages flex-grow mt-4 overflow-y-auto">
-        {messages.map((message) => (
+        {messages?.map((message) => (
           <div ref={scrollref}>
           <Message
             sender={(message as any)?.sender === user?._id}
