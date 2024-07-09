@@ -21,6 +21,7 @@
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.400.0",
     "next": "14.2.4",
+    "next-timeago": "^0.2.0",
     "react": "^18",
     "react-dom": "^18",
     "react-infinite-scroll-component": "^6.1.0",
