@@ -61,14 +61,14 @@ router.patch('/:id', async (req, res) => {
 
 // Delete a notification
 router.delete('/:id', async (req, res) => {
-  try {
-    await Notification.findByIdAndRemove(req.params.id);
-    res.json({ message: 'Notification deleted successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error deleting notification' });
-  }
-});
+    try {
+      await Notification.findByIdAndDelete(req.params.id);
+      res.json({ message: 'Notification deleted successfully' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: err });
+    }
+  });
 
 // Mark a notification as read
 router.patch('/read/:id', async (req, res) => {

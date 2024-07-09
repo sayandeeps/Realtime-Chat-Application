@@ -49,50 +49,44 @@ router.get('/:id', async (req, res) => {
         res.status(500).json(error);
     }
 });
-//student connect a expert
+//connect a user
 router.put('/:id/connect', async (req, res) => {
     try {
-        const studentId = req.params.id;
-        const expertId = req.body.userId;
-
-        // Check if studentId from URL matches the studentId from request body
-        if (studentId !== expertId) {
-            // Find the student by ID
-            const student = await User.findById(studentId);
-            // Find the expert by ID
-            const expert = await User.findById(expertId);
-
-            if (!student || !expert) {
-                return res.status(404).json({ message: 'Student or expert not found' });
-            }
-
-            // Check if the user with expertId is an expert
-            if (!expert.isExpert) {
-                return res.status(400).json({ message: 'User is not an expert' });
-            }
-
-            // Check if the expert is already in the student's connecedExpert list
-            if (student.connecedExpert.includes(expertId)) {
-                return res.status(400).json({ message: 'Expert is already connected' });
-            }
-
-            // Add expertId to the student's connecedExpert list
-            student.connecedExpert.push(expertId);
-            await student.save();
-
-            // Add studentId to the expert's connecedStudent list
-            expert.connecedStudent.push(studentId);
-            await expert.save();
-
-            res.status(200).json({ message: 'Expert connected successfully' });
-        } else {
-            res.status(400).json({ message: 'Cannot connect a student to themselves' });
-        }
+      const studentId = req.params.id;
+      const expertId = req.body.userId;
+        console.log(studentId, expertId);
+      if (studentId === expertId) {
+        return res.status(400).json({ message: 'Cannot connect a student to themselves' });
+      }
+  
+      const [student, expert] = await Promise.all([
+        User.findById(studentId),
+        User.findById(expertId),
+      ]);
+  
+      if (!student || !expert) {
+        return res.status(404).json({ message: 'Student or expert not found' });
+      }
+  
+      if (!expert.isExpert) {
+        return res.status(400).json({ message: 'User is not an expert' });
+      }
+  
+      if (student.connecedExpert.includes(expertId)) {
+        return res.status(400).json({ message: 'Expert is already connected' });
+      }
+  
+      student.connecedExpert.push(expertId);
+      expert.connecedStudent.push(studentId);
+  
+      await Promise.all([student.save(), expert.save()]);
+  
+      res.status(200).json({ message: 'Expert connected successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
     }
-});
+  });
 
 //student disconnect a expert
 router.put('/:id/sdisconnect', async (req, res) => {

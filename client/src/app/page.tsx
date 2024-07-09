@@ -351,7 +351,7 @@ useEffect(() => {
               ))}
             
             </div>
-            <div className="textareabottom fixed bottom-0 right-0 w-2/4 bg-white ">
+            <div className="textareabottom fixed bottom-0  w-2/4 bg-white ">
               <div className="flex flex-row items-center h-16 rounded-xl bg-white ">
                 <div>
                   <button

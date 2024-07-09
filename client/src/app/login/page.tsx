@@ -5,17 +5,21 @@ import { AuthContext } from '../context/AuthContext'
 import { IInitialState, IAuthContext } from "../../types/types";
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+import { useRouter } from 'next/navigation';
 
 const page = () => {
     const email = useRef<HTMLInputElement>(null);
     const password = useRef<HTMLInputElement>(null);
     const {user, isFetching, error, dispatch , logout} = useContext<IAuthContext>(AuthContext);
+
+    const { push } = useRouter();
     const handleClick = (e:any) => {
         e.preventDefault();
    
         if (email.current && password.current) {
             loginCall({ email: email.current.value, password: password.current.value }, dispatch);
             // Reset email and password fields
+            window.location.href = '/';
             email.current.value = '';
             password.current.value = '';
         }
@@ -29,7 +33,7 @@ const page = () => {
     <div className="w-full  max-w-sm mx-auto sticky center-0 overflow-hidden bg-white rounded-lg shadow-md dark:bg-gray-800">
     <div className="px-6 py-4">
         <div className="flex justify-center mx-auto">
-            <img className="w-auto h-7 sm:h-8" src="https://merakiui.com/images/logo.svg" alt=""/>
+            <img className="w-auto h-7 sm:h-8" src="https://cdn-icons-png.flaticon.com/512/295/295128.png" alt=""/>
         </div>
 
         <h3 className="mt-3 text-xl font-medium text-center text-gray-600 dark:text-gray-200">  {user ? `Welcome Back ${user.username}` : 'Welcome'}

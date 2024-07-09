@@ -46,6 +46,7 @@ export const AuthContextProvider = ({ children }: any) => {
 
   const logout = () => {
     dispatch(Logout());
+    window.location.href = '/';
   };
 
   return (
