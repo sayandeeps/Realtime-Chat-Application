@@ -64,6 +64,7 @@ for backend
 https://apichatbackend.vercel.app
 
 for frontend
+https://client-sayandeeps-sayandeeps-projects.vercel.app
 
 ```
 
