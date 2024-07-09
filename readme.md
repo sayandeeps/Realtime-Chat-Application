@@ -5,7 +5,7 @@
 https://github.com/sayandeeps/Realtime-Chat-Application/assets/89361557/43d19938-7a31-40d4-a893-19f7e06deabc
 
 
-![Click here to see the video demo of the project in youtube](https://youtu.be/pmaVh4I9oPU) 
+[Click here to see the video demo of the project in youtube](https://youtu.be/pmaVh4I9oPU) 
 
 ## High Level Representation of the Project 
 ![plot](./hld.png)
