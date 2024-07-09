@@ -6,9 +6,8 @@
 This is a comprehensive documentation of the backend and frontend code for a chat application.
 
 ## Tech Stack
--<img src="https://pbs.twimg.com/profile_images/1645688598375854080/nqUAmhWs_400x400.jpg" width="50" height="50">
-
-
+<img src="https://pbs.twimg.com/profile_images/1645688598375854080/nqUAmhWs_400x400.jpg" width="60" height="60"> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/1200px-Typescript_logo_2020.svg.png" width="50" height="50"> <img src="https://miro.medium.com/v2/resize:fit:1000/0*tCIiFzfAKsblfxnM.png" width="150" height="70">  <img src="https://ik.imagekit.io/ably/ghost/prod/2021/03/socket-io-logo-1.jpeg?tr=w-1728,q-50" width="150" height="70"> <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png" width="50" height="50">  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzsZf3LStssrnGmM6zFJLHGmAVPHjZCX28tQ&s" width="150" height="70">
+<img src="https://getlogovector.com/wp-content/uploads/2021/01/tailwind-css-logo-vector.png" width="150" height="70"> 
 
 ## Backend
 
@@ -60,9 +59,11 @@ Sheettest: A component that displays a list of online users.
 
 
 **Links of the vercel deployment** 
-```
+``` java
 for backend
 https://apichatbackend.vercel.app
+
+for frontend
 
 ```
 
