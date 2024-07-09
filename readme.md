@@ -1,9 +1,14 @@
 # Real Time Chat Application
 ## High Level Representation of the Project 
-![plot](./image.png)
+![plot](./hld.png)
 
 
 This is a comprehensive documentation of the backend and frontend code for a chat application.
+
+## Tech Stack
+-<img src="https://pbs.twimg.com/profile_images/1645688598375854080/nqUAmhWs_400x400.jpg" width="50" height="50">
+
+
 
 ## Backend
 
@@ -39,14 +44,28 @@ Sheettest: A component that displays a list of online users.
 
 ## Features
 
-- **Real-time Messaging** : The application uses WebSockets by socket io to enable real-time messaging between users andthe messagesn are also stored in mongodb from where we can retrieve 
-Conversation Management: The application allows users to create, manage, and delete conversations.
-User Authentication: The application uses JWT to authenticate users and authorize access to protected routes.
-Search Functionality: The application allows users to search for other users by username or email address.
-Online User Indicators: The application displays online user indicators to show which users are currently online.
-Challenges
+- **Real-time Messaging** : The application uses WebSockets by socket io to enable real-time messaging between users andthe messagesn are also stored in mongodb from where we can retrieve the history
+- **Conversation Management**: The application allows users to create, manage, and delete conversations.
+- **User Authentication**: The application uses context api to check for authenticate users and provide user access to protected routes and components avoiding prop drilling .
+- **Search Functionality**: The application allows users to search for other users by username .
+- **Online User Indicators**: The application displays online user indicators to show which users are currently online.
+- **Send Images**: Send over socket io and store in mongodb as Image Base64 string
 
-Scalability: The application may need to be optimized for scalability to handle a large number of users and conversations.
-Security: The application may need to be secured against potential security threats, such as SQL injection and cross-site scripting (XSS) attacks.
-Performance: The application may need to be optimized for performance to ensure fast and responsive user interactions.
+## Challenges
 
+- Scalability: The application may need to be optimized for scalability to handle a large number of users and conversations. Where we can user cache techniques to optimize it
+- Security: The application may need to be secured against potential security threats, such as SQL injection and cross-site scripting (XSS) attacks.
+- Performance: The application may need to be optimized for performance to ensure fast and responsive user interactions.
+- Media Transfer: Currently only base64 encoded image string supported the strings are too large and not efficient to store we can use storage solutions like s3 bucket and we can support wide rage of medias like image, videos, file, etc.
+
+
+**Links of the vercel deployment** 
+```
+for backend
+https://apichatbackend.vercel.app
+
+```
+
+> Currently deployed in vercel the client and backend part but socket server cant be deployed in vercel we will need aws or similar server. 
+
+> As we are using vercel free tierthe apis are too slowto be used so advisable to use in localhost later we can dockerize it and create a cicd pipely to deploy it in an EC2 instance in AWS or similar 
