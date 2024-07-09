@@ -1,4 +1,9 @@
 # Real Time Chat Application
+## Video Demo
+[![Demo](https://i9.ytimg.com/vi/pmaVh4I9oPU/mqdefault.jpg?sqp=CNyytLQG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgZShlMA8=&rs=AOn4CLCiPLupQtitYR-PhKhxJF1zLEBukw)](https://youtu.be/pmaVh4I9oPU)
+
+Click the above video to see the video demo of the project in youtube 
+
 ## High Level Representation of the Project 
 ![plot](./hld.png)
 
